@@ -31,6 +31,7 @@ var userSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    imageUrl: String,
     saltSecret: String
 });
 

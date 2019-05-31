@@ -7,5 +7,7 @@ const jwtHelper = require('../configurations/jwtHelper');
 router.post('/register', ctrlUser.register);
 router.post('/authenticate', ctrlUser.authenticate);
 router.get('/userprofile',jwtHelper.verifyJwtToken, ctrlUser.userProfile);
+router.post('/changeuserprofile',jwtHelper.verifyJwtToken, ctrlUser.updateUserProfile);
+router.post('/uploadprofilepicture',jwtHelper.verifyJwtToken, ctrlUser.uploadPicture);
 
 module.exports = router;

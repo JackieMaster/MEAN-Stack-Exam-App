@@ -31,6 +31,10 @@ export class UserService {
     return this.http.get(environment.apiBaseUrl + '/userprofile');
   }
 
+  changeUserProfile(userDetails) {
+    return this.http.post(environment.apiBaseUrl + '/changeuserprofile', userDetails);
+  }
+
   setToken(token: string) {
     localStorage.setItem('token', token);
   }
