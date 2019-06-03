@@ -60,10 +60,16 @@ module.exports.userProfile = (req, res, next) => {
             if (!user)
                 return res.status(404).json({ status: false, message: 'User record not found' });
             else {
-                // var filePath = user.imagePath;
-                // var x = fs.createReadStream(filePath).pipe(res);
-
-                res.status(200).json({ status: true, user : _.pick(user,['firstName','lastName','phoneNo','email']) });
+                createImageUrl(user.imagePath).then((url) => {
+                if(url){
+                    const imgUrl = url;                                  
+                    res.status(200).json({ status: true, user : _.pick(user,['firstName','lastName','phoneNo','email']), imgUrl: imgUrl });
+                }else {                
+                    return res.status(422).json({ status: false, message: 'Something is wrong! Unable to load the data' });
+                }
+              }).catch((error) => {
+                console.error(error);
+              });
             }  
         }
     );
@@ -133,7 +139,7 @@ const uploadImageToStorage = (file) => {
       }
       const newFileName = `${file.originalname}_${Date.now()}`;  
       const fileUpload = bucket.file('profile-pictures' + '/' + newFileName);
-  
+ 
       const blobStream = fileUpload.createWriteStream({
         metadata: {
           contentType: file.mimetype
@@ -149,11 +155,36 @@ const uploadImageToStorage = (file) => {
   
       blobStream.on('finish', () => {
         // The public URL can be used to directly access the file via HTTP.
-        const url = format(`https://storage.googleapis.com/${bucket.name}/${fileUpload.name}`);
+        // const url = format(`https://storage.googleapis.com/${bucket.name}/${fileUpload.name}`);
+        const url = format(`${fileUpload.name}`);
         resolve(url);
       });
   
       blobStream.end(file.buffer);
+    });
+}
+
+// Get a signed URL to allow limited time access to the picture
+const createImageUrl = (path) => {
+    return new Promise((resolve, reject) => {
+      if (!path) {
+        reject('No image path');
+        } 
+        var file = bucket.file(path);       
+        const options = {
+            action: 'read',
+            expires: '03-02-2025',
+          };
+        file.getSignedUrl(options)
+          .then(results => {
+            const url = results[0];
+            resolve(url);
+          })
+          .catch(err => {
+              console.error('ERROR:', err);
+              const url = null;
+              resolve(url);
+          });
     });
 }
 

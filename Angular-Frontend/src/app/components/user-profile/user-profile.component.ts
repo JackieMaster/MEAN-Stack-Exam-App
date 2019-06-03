@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Component, OnInit } from '@angular/core';
@@ -16,7 +17,7 @@ export class UserProfileComponent implements OnInit {
 
   public formGroup: FormGroup;
   private userDetails;
-
+  profileUrl$: Observable<string | null>;
   imageUrl = 'assets/img/profile.png';
 
   // tslint:disable-next-line:max-line-length
@@ -38,10 +39,12 @@ export class UserProfileComponent implements OnInit {
         // tslint:disable-next-line:no-string-literal
         this.userDetails = res['user'];
         this.setUser(this.userDetails);
+        // tslint:disable-next-line:no-string-literal
+        this.profileUrl$ = res['imgUrl'];
       },
       err => {
         console.log(err);
-
+        this.toastr.error('Error!');
       }
     );
   }

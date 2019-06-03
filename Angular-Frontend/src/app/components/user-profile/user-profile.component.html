@@ -2,8 +2,8 @@
   <form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
     <div class="form-row">
       <a mdbDropdownToggle (click)="Image.click()">
-        <div class="user-image">
-          <img class="center" id="profile-pic" [src]="imageUrl" alt="My Image">
+        <div class="user-image" *ngIf="profileUrl$; let url">
+          <img class="center" id="profile-pic" [src]="url" alt="My Image">
         </div>
       </a>
         <input hidden type="file" formControlName="avaterFile" #Image accept="image/*" (change)="uploadPicture($event)">   
